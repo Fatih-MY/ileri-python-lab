@@ -1,3 +1,7 @@
+import json
+from pathlib import Path 
+
+
 def envanter_metni(credits: bool, engines: bool, copilot: bool) -> str:
     """Eldeki eşyaları 'Sende: ...' metnine çevirir.
 
@@ -22,6 +26,35 @@ def hedef_menusu(hedefler: list[str]) -> str:
     for sira, hedef in enumerate(hedefler, start=1):
         satirlar.append(f"[{sira}] {hedef}")
     return "\n".join(satirlar) 
+
+def galaksi_kur(
+    gezegenler: list[str],
+    baglantilar: dict[str, list[str]],
+    baslangic: str,
+    **kwargs: int,
+) -> dict:
+    """Galaksi verisinden oyunun başlangıç durumunu kurar.
+
+    baslangic gezegenler listesinde yoksa ValueError fırlatır.
+    Yakıt verilmezse (yakit=...) varsayılan 50 olur.
+    """
+    if baslangic not in gezegenler:
+        raise ValueError(f"Başlangıç gezegeni listede yok: {baslangic}")
+    return {
+        "gezegenler": gezegenler,
+        "baglantilar": baglantilar,
+        "konum": baslangic,
+        "yakit": kwargs.get("yakit", 50),
+    }
+
+
+def galaksi_yukle() -> dict:
+    """galaksi.json dosyasını okuyup galaksi_kur ile galaksiyi kurar."""
+    yol = Path(__file__).with_name("galaksi.json")
+    with open(yol, encoding="utf-8") as dosya:
+        veri = json.load(dosya)
+    return galaksi_kur(**veri)
+
 
 def travel() -> None:
     """Oyunun ana döngüsü."""
