@@ -23,7 +23,7 @@ def hedef_menusu(hedefler: list[str]) -> str:
         satirlar.append(f"[{sira}] {hedef}")
     return "\n".join(satirlar) 
 
-def travel():
+def travel() -> None:
     """Oyunun ana döngüsü."""
     planet = "dünya"
     fuel = 100
