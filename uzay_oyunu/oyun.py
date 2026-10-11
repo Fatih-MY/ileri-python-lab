@@ -22,3 +22,55 @@ def hedef_menusu(hedefler: list[str]) -> str:
     for sira, hedef in enumerate(hedefler, start=1):
         satirlar.append(f"[{sira}] {hedef}")
     return "\n".join(satirlar) 
+
+def travel():
+    """Oyunun ana döngüsü."""
+    planet = "dünya"
+    fuel = 100
+    credits = engines = copilot = False
+    print("Uzay yolculuğuna hoş geldin!")
+
+    while True:
+        # Gezegene varınca eşyayı al
+        if planet == "centauri":
+            credits = True
+        elif planet == "sirius":
+            copilot = True
+        elif planet == "orion":
+            engines = True
+
+        print(f"\nŞu an {planet} gezegenindesin. Yakıt: {fuel}")
+        envanter = envanter_metni(credits, engines, copilot)
+        if envanter:
+            print(envanter)
+
+        if planet == "kara_delik":
+            if credits and engines and copilot:
+                print("Kara deliği geçtin, oyunu kazandın!")
+            else:
+                print("Eksik donanımla kara deliğe girdin. Oyun bitti.")
+            break
+        if fuel <= 0:
+            print("Yakıtın bitti. Oyun bitti.")
+            break
+
+        if planet == "dünya":
+            destinations = ["centauri", "sirius"]
+        elif planet == "centauri":
+            destinations = ["dünya", "sirius"]
+        elif planet == "sirius":
+            destinations = ["dünya", "centauri", "orion"]
+        else:  # orion
+            destinations = ["kara_delik"]
+
+        print(hedef_menusu(destinations))
+        secim = input("> ")
+        if secim.isdigit() and 1 <= int(secim) <= len(destinations):
+            planet = destinations[int(secim) - 1]
+            fuel -= 10
+        else:
+            print("Geçersiz seçim.")
+
+
+if __name__ == "__main__":
+    travel()
