@@ -1,6 +1,6 @@
 import json
 from pathlib import Path 
-
+from uzay_oyunu.araclar import hamle_sayaci
 
 def envanter_metni(credits: bool, engines: bool, copilot: bool) -> str:
     """Eldeki eşyaları 'Sende: ...' metnine çevirir.
@@ -58,11 +58,13 @@ def galaksi_yukle() -> dict:
 
 def travel() -> None:
     """Oyunun ana döngüsü."""
-    planet = "dünya"
-    fuel = 100
+    galaksi = galaksi_yukle()
+    planet = galaksi["konum"]
+    fuel = galaksi["yakit"]
     credits = engines = copilot = False
     print("Uzay yolculuğuna hoş geldin!")
-
+    hamle = hamle_sayaci()
+    hamle_sayisi = 0
     while True:
         # Gezegene varınca eşyayı al
         if planet == "centauri":
@@ -87,23 +89,17 @@ def travel() -> None:
             print("Yakıtın bitti. Oyun bitti.")
             break
 
-        if planet == "dünya":
-            destinations = ["centauri", "sirius"]
-        elif planet == "centauri":
-            destinations = ["dünya", "sirius"]
-        elif planet == "sirius":
-            destinations = ["dünya", "centauri", "orion"]
-        else:  # orion
-            destinations = ["kara_delik"]
+        destinations = galaksi["baglantilar"][planet]
 
         print(hedef_menusu(destinations))
         secim = input("> ")
         if secim.isdigit() and 1 <= int(secim) <= len(destinations):
             planet = destinations[int(secim) - 1]
             fuel -= 10
+             hamle_sayisi = hamle()
         else:
             print("Geçersiz seçim.")
-
+        print(f"\nOyunu {hamle_sayisi} hamlede bitirdin!")
 
 if __name__ == "__main__":
     travel()
