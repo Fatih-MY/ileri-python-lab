@@ -1,3 +1,5 @@
+from uzay_oyunu.akis import yakit_gostergesi
+from uzay_oyunu.araclar import hamle_sayaci
 import json
 from pathlib import Path 
 from uzay_oyunu.araclar import hamle_sayaci
@@ -61,10 +63,12 @@ def travel() -> None:
     galaksi = galaksi_yukle()
     planet = galaksi["konum"]
     fuel = galaksi["yakit"]
+    gosterge = yakit_gostergesi(galaksi["yakit"], 5)
     credits = engines = copilot = False
-    print("Uzay yolculuğuna hoş geldin!")
     hamle = hamle_sayaci()
     hamle_sayisi = 0
+    print("Uzay yolculuğuna hoş geldin!")
+
     while True:
         # Gezegene varınca eşyayı al
         if planet == "centauri":
@@ -85,21 +89,23 @@ def travel() -> None:
             else:
                 print("Eksik donanımla kara deliğe girdin. Oyun bitti.")
             break
-        if fuel <= 0:
-            print("Yakıtın bitti. Oyun bitti.")
-            break
 
         destinations = galaksi["baglantilar"][planet]
-
         print(hedef_menusu(destinations))
         secim = input("> ")
         if secim.isdigit() and 1 <= int(secim) <= len(destinations):
+            try:
+                fuel = next(gosterge)
+            except StopIteration:
+                print("Yakıtın bitti, uzayda sürükleniyorsun…")
+                break
             planet = destinations[int(secim) - 1]
-            fuel -= 10
             hamle_sayisi = hamle()
         else:
             print("Geçersiz seçim.")
-        print(f"\nOyunu {hamle_sayisi} hamlede bitirdin!")
+
+    print(f"\nOyunu {hamle_sayisi} hamlede bitirdin!")
+
 
 if __name__ == "__main__":
     travel()
