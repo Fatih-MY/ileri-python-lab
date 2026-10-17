@@ -96,7 +96,7 @@ def travel() -> None:
         if secim.isdigit() and 1 <= int(secim) <= len(destinations):
             planet = destinations[int(secim) - 1]
             fuel -= 10
-             hamle_sayisi = hamle()
+            hamle_sayisi = hamle()
         else:
             print("Geçersiz seçim.")
         print(f"\nOyunu {hamle_sayisi} hamlede bitirdin!")
