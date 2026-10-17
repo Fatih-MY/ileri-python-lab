@@ -30,4 +30,4 @@ def test_baslangic_listede_yoksa_hata():
 def test_baglanti_sirasi_korunur():
     g = galaksi_kur(**veriyi_oku())
     assert g["baglantilar"]["dünya"] == ["centauri", "sirius"]
-    assert g["baglantilar"]["sirius"] == ["dünya", "centauri", "orion"]
+    assert g["baglantilar"]["sirius"] == ["dünya", "orion", "kara_delik"]
