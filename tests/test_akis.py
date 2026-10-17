@@ -29,7 +29,8 @@ def test_uretec_tek_kullanimliktir():
     assert ikinci == [5, 8, 13, 21, 34]
     assert ilk != ikinci
 
-    def test_yakit_gostergesi_listesi():
+
+def test_yakit_gostergesi_listesi():
     assert list(yakit_gostergesi(100, 30)) == [70, 40, 10, 0]
 
 
