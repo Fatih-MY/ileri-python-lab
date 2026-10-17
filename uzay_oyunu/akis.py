@@ -7,3 +7,15 @@ def fibonacci() -> Iterator[int]:
     while True:
         yield onceki
         onceki, simdiki = simdiki, onceki + simdiki
+
+
+def yakit_gostergesi(yakit: int, tuketim: int) -> Iterator[int]:
+    """Her next() çağrısında yakıtı tuketim kadar azaltıp kalanı üretir.
+
+    Yakıt 0'a inince durur (StopIteration). tuketim pozitif olmalıdır.
+    """
+    if tuketim <= 0:
+        raise ValueError("tuketim pozitif olmalı")
+    while yakit > 0:
+        yakit = max(yakit - tuketim, 0)
+        yield yakit
