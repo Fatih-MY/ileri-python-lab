@@ -33,9 +33,30 @@ def say(fonksiyon: Callable[..., Any]) -> Callable[..., Any]:
     return sarmalayici
 
 
+def log_cagri(fonksiyon: Callable[..., Any]) -> Callable[..., Any]:
+    """Her çağrıdan önce ad ve argümanları, sonra dönüş değerini yazdırır."""
+
+    @wraps(fonksiyon)
+    def sarmalayici(*args: Any, **kwargs: Any) -> Any:
+        parcalar = [repr(arg) for arg in args]
+        parcalar += [f"{ad}={deger!r}" for ad, deger in kwargs.items()]
+        print(f"-> {fonksiyon.__name__}({', '.join(parcalar)})")
+        sonuc = fonksiyon(*args, **kwargs)
+        print(f"<- {fonksiyon.__name__} = {sonuc!r}")
+        return sonuc
+
+    return sarmalayici
+
+
 if __name__ == "__main__":
     from uzay_oyunu.akis import rota_sayisi_onbelleksiz
     from uzay_oyunu.oyun import galaksi_yukle
+
+    @log_cagri
+    def yolculuk(hedef, hiz=1):
+        return f"{hedef} hiz={hiz}"
+
+    yolculuk("orion", hiz=3)
 
     olculen = sure_olc(rota_sayisi_onbelleksiz)
     sonuc = olculen(galaksi_yukle()["baglantilar"], "dünya", 20)

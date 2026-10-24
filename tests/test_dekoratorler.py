@@ -46,6 +46,7 @@ def test_sure_belirtilen_bicimde_yazdirilir(capsys):
 def test_onbelleksiz_rota_sayacina_uygulanir(capsys):
     olculen = sure_olc(rota_sayisi_onbelleksiz)
     baglantilar = galaksi_yukle()["baglantilar"]
+    capsys.readouterr()
     assert olculen(baglantilar, "dünya", 10) == 2185
     cikti = capsys.readouterr().out
     assert cikti.startswith("rota_sayisi_onbelleksiz: ")
