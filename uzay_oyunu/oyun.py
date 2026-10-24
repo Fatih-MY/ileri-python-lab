@@ -1,6 +1,7 @@
 from uzay_oyunu.akis import yakit_gostergesi
 from uzay_oyunu.araclar import hamle_sayaci
 from uzay_oyunu.dekoratorler import log_cagri
+from uzay_oyunu.komutlar import KOMUTLAR 
 import json
 from pathlib import Path 
 from uzay_oyunu.araclar import hamle_sayaci
@@ -94,8 +95,21 @@ def travel() -> None:
             break
 
         destinations = galaksi["baglantilar"][planet]
+        durum = {
+            "konum": planet,
+            "baglantilar": galaksi["baglantilar"],
+            "credits": credits,
+            "engines": engines,
+            "copilot": copilot,
+        }
         print(hedef_menusu(destinations))
-        secim = input("> ")
+        secim = input("> ").strip()
+        while secim in KOMUTLAR:
+            komut_fonksiyonu, _ = KOMUTLAR[secim]
+            print(komut_fonksiyonu(durum))
+            print(hedef_menusu(destinations))
+            secim = input("> ").strip()
+
         if secim.isdigit() and 1 <= int(secim) <= len(destinations):
             try:
                 fuel = next(gosterge)
