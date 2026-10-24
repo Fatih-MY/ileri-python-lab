@@ -1,3 +1,4 @@
+import inspect
 import time
 from collections.abc import Callable
 from functools import wraps
@@ -46,6 +47,34 @@ def log_cagri(fonksiyon: Callable[..., Any]) -> Callable[..., Any]:
         return sonuc
 
     return sarmalayici
+
+
+def sinirla(
+    alt: float, ust: float
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    """Dekore edilen fonksiyonun ilk argümanını [alt, ust] aralığıyla sınırlar.
+
+    İlk argüman aralık dışındaysa anlamlı bir ValueError fırlatır.
+    """
+
+    def dekorator(fonksiyon: Callable[..., Any]) -> Callable[..., Any]:
+        imza = inspect.signature(fonksiyon)
+
+        @wraps(fonksiyon)
+        def sarmalayici(*args: Any, **kwargs: Any) -> Any:
+            bagli = imza.bind(*args, **kwargs)
+            bagli.apply_defaults()
+            deger = next(iter(bagli.arguments.values()))
+            if not alt <= deger <= ust:
+                raise ValueError(
+                    f"{fonksiyon.__name__}: {deger} değeri "
+                    f"{alt}-{ust} aralığında değil"
+                )
+            return fonksiyon(*args, **kwargs)
+
+        return sarmalayici
+
+    return dekorator
 
 
 if __name__ == "__main__":
