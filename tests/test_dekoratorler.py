@@ -1,9 +1,9 @@
 import re
 
 from uzay_oyunu.akis import rota_sayisi_onbelleksiz
-from uzay_oyunu.dekoratorler import say, sure_olc
+from uzay_oyunu.dekoratorler import log_cagri, say, sure_olc
 from uzay_oyunu.fib_deney import fib_cache_ustte, fib_say_ustte, fib_yalniz_say
-from uzay_oyunu.oyun import galaksi_yukle
+from uzay_oyunu.oyun import galaksi_kur, galaksi_yukle, hedef_menusu
 
 
 def test_sonuc_degismeden_doner():
@@ -106,3 +106,50 @@ def test_fib_lru_cache_ustte_say_altta():
     assert fib.__wrapped__.cagri == 21
     # wraps, sayacın yalnızca bir kopyasını taşır, canlı sayaç alttadır.
     assert fib.cagri == 0
+
+
+def test_log_cagri_oncesi_ve_sonrasi_yazdirir(capsys):
+    @log_cagri
+    def yolculuk(hedef, hiz=1):
+        return f"{hedef} hiz={hiz}"
+
+    sonuc = yolculuk("orion", hiz=3)
+    assert sonuc == "orion hiz=3"
+    assert capsys.readouterr().out == (
+        "-> yolculuk('orion', hiz=3)\n"
+        "<- yolculuk = 'orion hiz=3'\n"
+    )
+
+
+def test_log_cagri_konumsal_ve_adli_argumanlar(capsys):
+    @log_cagri
+    def topla(a, b, c=0):
+        return a + b + c
+
+    assert topla(1, 2, c=3) == 6
+    assert capsys.readouterr().out == "-> topla(1, 2, c=3)\n<- topla = 6\n"
+
+
+def test_log_cagri_ad_ve_belgeyi_korur():
+    @log_cagri
+    def ornek():
+        """Örnek belge."""
+        return 1
+
+    assert ornek.__name__ == "ornek"
+    assert ornek.__doc__ == "Örnek belge."
+
+
+def test_hedef_menusu_loglanir(capsys):
+    menu = hedef_menusu(["a", "b"])
+    assert menu == "Nereye gitmek istersin?\n[1] a\n[2] b"
+    assert capsys.readouterr().out.startswith("-> hedef_menusu(['a', 'b'])\n")
+    assert hedef_menusu.__name__ == "hedef_menusu"
+
+
+def test_galaksi_kur_loglanir(capsys):
+    g = galaksi_kur(["mars"], {"mars": []}, "mars")
+    assert g["yakit"] == 50
+    log = capsys.readouterr().out
+    assert log.startswith("-> galaksi_kur(['mars'], {'mars': []}, 'mars')\n")
+    assert galaksi_kur.__name__ == "galaksi_kur"
