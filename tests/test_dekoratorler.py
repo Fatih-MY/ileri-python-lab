@@ -1,9 +1,12 @@
 import re
 
+import pytest
+
 from uzay_oyunu.akis import rota_sayisi_onbelleksiz
-from uzay_oyunu.dekoratorler import log_cagri, say, sure_olc
+from uzay_oyunu.dekoratorler import log_cagri, say, sinirla, sure_olc
 from uzay_oyunu.fib_deney import fib_cache_ustte, fib_say_ustte, fib_yalniz_say
 from uzay_oyunu.oyun import galaksi_kur, galaksi_yukle, hedef_menusu
+from uzay_oyunu.yakit import yakit_harca
 
 
 def test_sonuc_degismeden_doner():
@@ -154,3 +157,59 @@ def test_galaksi_kur_loglanir(capsys):
     log = capsys.readouterr().out
     assert log.startswith("-> galaksi_kur(['mars'], {'mars': []}, 'mars')\n")
     assert galaksi_kur.__name__ == "galaksi_kur"
+
+
+def test_aralik_icindeki_deger_gecer():
+    @sinirla(0, 10)
+    def ikiyle_carp(x):
+        return x * 2
+
+    assert ikiyle_carp(5) == 10
+
+
+def test_yakit_harca_sinir_degerleri_gecerlidir():
+    assert yakit_harca(0) == 100
+    assert yakit_harca(100) == 0
+
+
+def test_yakit_harca_aralik_disi_degerler_hata_verir():
+    with pytest.raises(
+        ValueError, match="yakit_harca: 150 değeri 0-100 aralığında değil"
+    ):
+        yakit_harca(150)
+    with pytest.raises(ValueError, match="yakit_harca: -1 değeri"):
+        yakit_harca(-1)
+
+
+def test_yakit_harca_sinirin_hemen_disi_hata_verir():
+    with pytest.raises(ValueError):
+        yakit_harca(101)
+    with pytest.raises(ValueError):
+        yakit_harca(-1)
+
+
+def test_sinirla_adli_argumanla_da_kontrol_eder():
+    assert yakit_harca(miktar=30) == 70
+    with pytest.raises(ValueError, match="yakit_harca: 150"):
+        yakit_harca(miktar=150)
+
+
+def test_sinirla_yalnizca_ilk_argumani_kontrol_eder():
+    @sinirla(0, 10)
+    def topla(a, b):
+        return a + b
+
+    assert topla(5, 1000) == 1005
+    with pytest.raises(ValueError):
+        topla(11, 1)
+
+
+def test_sinirla_ad_ve_belgeyi_korur():
+    @sinirla(0, 10)
+    def ornek(x):
+        """Örnek belge."""
+        return x
+
+    assert ornek.__name__ == "ornek"
+    assert ornek.__doc__ == "Örnek belge."
+    assert yakit_harca.__name__ == "yakit_harca"
